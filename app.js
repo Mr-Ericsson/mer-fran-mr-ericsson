@@ -92,52 +92,13 @@
     return li;
   }
 
-  function isAndroid() {
-    return /Android/i.test(navigator.userAgent || "");
-  }
-
-  /**
-   * Social apps: NEVER navigate to instagram.com / facebook.com inside the WebView
-   * (Meta’s “Öppna appen”-popup is broken there). Stay on our host → open-app.html
-   * which fires Android intents without an https fallback to Meta’s site.
-   */
-  function socialHref(key, httpsUrl) {
-    const appKeys = ["instagram", "facebook", "tiktok", "youtube"];
-    if (appKeys.includes(key)) {
-      return {
-        // Cache-bust so WebViews don’t keep an old open-app.html
-        href: `open-app.html?app=${encodeURIComponent(key)}&v=13`,
-        native: true,
-      };
-    }
-
-    if (key === "play" && httpsUrl && isAndroid()) {
-      try {
-        const u = new URL(httpsUrl);
-        const id = u.searchParams.get("id");
-        if (id) {
-          return { href: `market://details?id=${encodeURIComponent(id)}`, native: true };
-        }
-        const path = `play.google.com${u.pathname}${u.search}`;
-        return {
-          href:
-            `intent://${path}#Intent;scheme=https;package=com.android.vending;` +
-            `S.browser_fallback_url=${encodeURIComponent(httpsUrl)};end`,
-          native: true,
-        };
-      } catch (_) {
-        /* https */
-      }
-    }
-
-    return { href: httpsUrl, native: false };
-  }
-
   function fillSocial(data) {
     if (!els.social) return;
     const website = data.websiteUrl || "https://www.mrericsson.com";
     const social = data.social || {};
-    const bust = "v=13";
+    const bust = "v=14";
+    // Plain https URLs — the in-app WebView kit MUST open IG/FB/TikTok/YT/Play
+    // outside the WebView (ACTION_VIEW). Do not special-case here.
     const items = [
       { key: "website", label: "Hemsida", url: website, icon: `assets/social/website.svg?${bust}` },
       { key: "play", label: "Google Play", url: data.playDeveloperUrl || "", icon: `assets/social/play.svg?${bust}` },
@@ -150,14 +111,10 @@
       ...items
         .filter((item) => item.url)
         .map((item) => {
-          const open = socialHref(item.key, item.url);
           const a = document.createElement("a");
           a.className = `social-btn social-btn--${item.key}`;
-          a.href = open.href;
-          if (!open.native) {
-            a.target = "_blank";
-            a.rel = "noopener noreferrer";
-          }
+          a.href = item.url;
+          a.rel = "noopener noreferrer";
           a.title = item.label;
           a.setAttribute("aria-label", item.label);
           const img = document.createElement("img");
