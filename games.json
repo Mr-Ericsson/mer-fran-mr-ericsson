@@ -1,0 +1,151 @@
+﻿{
+  "websiteUrl": "https://www.mrericsson.com",
+  "playDeveloperUrl": "https://play.google.com/store/apps/dev?id=5530350478030180827",
+  "social": {
+    "tiktok": "https://www.tiktok.com/@mr_ericsson",
+    "instagram": "https://www.instagram.com/mrericssonpadeltournaments/",
+    "facebook": "https://www.facebook.com/profile.php?id=61594625726599",
+    "youtube": "https://www.youtube.com/@MrEricssonDeveloper"
+  },
+  "brand": {
+    "title": "Mer från utvecklaren",
+    "subtitle": "Mr Ericsson"
+  },
+  "live": [
+    {
+      "id": "battleship",
+      "title": "Battleship",
+      "packageName": "se.ericsson.battleship",
+      "iconUrl": "icons/battleship.png"
+    },
+    {
+      "id": "trainstation",
+      "title": "Train Station",
+      "packageName": "com.mrericsson.trainstation",
+      "iconUrl": "icons/trainstation.png"
+    },
+    {
+      "id": "familjespelen",
+      "title": "Familjespelet",
+      "packageName": "com.mrericsson.familjespelen",
+      "iconUrl": "icons/familjespelen.png"
+    },
+    {
+      "id": "whomostlikely",
+      "title": "Who Most Likely",
+      "packageName": "com.mrericsson.whomostlikely",
+      "iconUrl": "icons/whomostlikely.png"
+    },
+    {
+      "id": "neverhaveiever",
+      "title": "Never Have I Ever",
+      "packageName": "com.mrericsson.neverhaveiever",
+      "iconUrl": "icons/neverhaveiever.png"
+    },
+    {
+      "id": "numbermatch",
+      "title": "Number Match",
+      "packageName": "com.numberpuzzle.number_match",
+      "iconUrl": "icons/numbermatch.png"
+    },
+    {
+      "id": "homeos",
+      "title": "Home OS",
+      "packageName": "com.homeos.app.dev",
+      "iconUrl": "icons/homeos.png"
+    },
+    {
+      "id": "padeltournaments",
+      "title": "Padeltournaments",
+      "packageName": "com.mrericsson.padeltournaments",
+      "iconUrl": "icons/padeltournaments.png"
+    },
+    {
+      "id": "blockburst",
+      "title": "Block Burst",
+      "packageName": "com.lexiegames.blockburst",
+      "iconUrl": "icons/blockburst.png"
+    }
+  ],
+  "testing": [
+    {
+      "id": "korsmord",
+      "title": "Korsmord",
+      "packageName": "com.mrericsson.korsmord",
+      "iconUrl": "icons/korsmord.png",
+      "teaser": "Under testning",
+      "websiteUrl": "https://sites.google.com/view/mrericssondev/startsida/korsmord"
+    },
+    {
+      "id": "sverigesdummaste",
+      "title": "Sveriges Dummaste",
+      "packageName": "com.mrericsson.sverigesdummaste",
+      "iconUrl": "icons/sverigesdummaste.png",
+      "teaser": "Under testning",
+      "websiteUrl": "https://sites.google.com/view/mrericssondev/startsida/sveriges-dummaste"
+    },
+    {
+      "id": "numbermerge",
+      "title": "Number Merge",
+      "packageName": "com.mrericsson.numbermerge",
+      "iconUrl": "icons/numbermerge.png",
+      "teaser": "Under testning",
+      "websiteUrl": "https://sites.google.com/view/mrericssondev/startsida/number-merge"
+    },
+    {
+      "id": "shikaku",
+      "title": "Shikaku",
+      "packageName": "com.mrericsson.shikaku",
+      "iconUrl": "icons/shikaku.png",
+      "teaser": "Under testning",
+      "websiteUrl": "https://sites.google.com/view/mrericssondev/startsida/shikaku"
+    },
+    {
+      "id": "idledriver",
+      "title": "Idle Driver",
+      "packageName": "com.mrericsson.idledriver",
+      "iconUrl": "icons/idledriver.png",
+      "teaser": "Under testning",
+      "websiteUrl": "https://sites.google.com/view/mrericssondev/startsida/idle-driver"
+    },
+    {
+      "id": "mrfitness",
+      "title": "Mr Fitness",
+      "packageName": "com.mrericsson.mrfitness",
+      "iconUrl": "icons/mrfitness.png",
+      "teaser": "Under testning",
+      "websiteUrl": "https://sites.google.com/view/mrericssondev/startsida/mr-fitness"
+    }
+  ],
+  "upcoming": [
+    {
+      "id": "lifecoach",
+      "title": "Life Coach",
+      "teaser": "Under utveckling",
+      "iconUrl": "icons/lifecoach.png"
+    },
+    {
+      "id": "treasurehunt",
+      "title": "Treasure Hunt",
+      "teaser": "Under utveckling",
+      "iconUrl": "icons/treasurehunt.png"
+    }
+  ],
+  "testers": {
+    "note": "Här är apparna ni som testare ska ha installerade och uppdaterade under hela testfasen. Klicka på respektive knapp, välj Become a tester på Play och installera appen. Buggar och förbättringsförslag skickar ni som vanligt via Messenger eller e-post.",
+    "installNow": [
+      {
+        "id": "numbermerge",
+        "testerUrl": "https://play.google.com/apps/testing/com.mrericsson.numbermerge"
+      },
+      {
+        "id": "sverigesdummaste",
+        "testerUrl": "https://play.google.com/apps/testing/com.mrericsson.sverigesdummaste"
+      },
+      {
+        "id": "idledriver",
+        "testerUrl": "https://play.google.com/apps/testing/com.mrericsson.idledriver"
+      }
+    ]
+  }
+}

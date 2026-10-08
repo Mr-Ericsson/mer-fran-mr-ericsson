@@ -1,0 +1,13 @@
+# Local / temp
+.DS_Store
+Thumbs.db
+*.log
+
+# Comfy scratch (not part of the static site)
+comfy/out/
+comfy/*.json
+
+# Editor
+.idea/
+.vscode/
+*.swp

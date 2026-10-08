@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0A0D12" />
+    <meta name="color-scheme" content="dark" />
+    <title>Mer från utvecklaren — Mr Ericsson</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Syne:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=8" />
+  </head>
+  <body data-page="home">
+    <div class="app">
+      <header class="header">
+        <div class="back-hint" aria-hidden="true" title="Tillbaka (appen)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M15 6 9 12l6 6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+        <div class="brand">
+          <img
+            class="brand-mark"
+            src="assets/logo-mr-ericsson.png"
+            alt=""
+            width="36"
+            height="36"
+          />
+          <div>
+            <h1 class="brand-title" id="brand-title">Mer från utvecklaren</h1>
+            <p class="brand-sub" id="brand-sub">Mr Ericsson</p>
+          </div>
+        </div>
+        <a class="about-chip" href="about.html">Vem är Mr Ericsson?</a>
+      </header>
+
+      <main class="main">
+        <section class="section" id="live-section" aria-labelledby="live-label">
+          <h2 class="section-label" id="live-label">På Google Play</h2>
+          <ul class="game-grid" id="live-grid"></ul>
+        </section>
+
+        <section class="section" id="testing-section" aria-labelledby="testing-label">
+          <h2 class="section-label" id="testing-label">Under testning</h2>
+          <ul class="game-grid" id="testing-grid"></ul>
+        </section>
+
+        <section class="section" id="upcoming-section" aria-labelledby="upcoming-label">
+          <h2 class="section-label" id="upcoming-label">Under utveckling</h2>
+          <ul class="game-grid" id="upcoming-grid"></ul>
+        </section>
+
+        <p class="empty hidden" id="empty">Inga spel att visa just nu.</p>
+
+        <div class="error hidden" id="error" role="alert">
+          <p>Kunde inte ladda katalogen.</p>
+          <button type="button" class="retry-btn" id="retry">Försök igen</button>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <p class="footer-note">
+          Mer om varje spel finns på
+          <a id="website-link" href="https://www.mrericsson.com">www.mrericsson.com</a>.
+        </p>
+        <div class="social" id="social" aria-label="Länkar"></div>
+        <a class="btn" href="testers.html">För testare</a>
+      </footer>
+    </div>
+    <script src="app.js?v=7"></script>
+  </body>
+</html>

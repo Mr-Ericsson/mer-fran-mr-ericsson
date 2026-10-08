@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0A0D12" />
+    <title>För testare — Mr Ericsson</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Syne:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=7" />
+  </head>
+  <body data-page="testers">
+    <div class="app">
+      <header class="header">
+        <a class="back-link" href="index.html" aria-label="Tillbaka">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M15 6 9 12l6 6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+        <div class="brand">
+          <img
+            class="brand-mark"
+            src="assets/logo-mr-ericsson.png"
+            alt=""
+            width="36"
+            height="36"
+          />
+          <div>
+            <h1 class="brand-title">För testare</h1>
+            <p class="brand-sub">Installera dessa nu</p>
+          </div>
+        </div>
+      </header>
+
+      <main class="main">
+        <p class="page-lead" id="tester-note">
+          Här är apparna ni som testare ska ha installerade och uppdaterade under
+          hela testfasen. Klicka på respektive knapp, välj Become a tester på Play
+          och installera appen. Buggar och förbättringsförslag skickar ni som
+          vanligt via Messenger eller e-post.
+        </p>
+        <ul class="tester-list" id="tester-list"></ul>
+        <div class="error hidden" id="error" role="alert">
+          <p>Kunde inte ladda listan.</p>
+          <button type="button" class="retry-btn" id="retry">Försök igen</button>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <p class="footer-note">
+          Mer om spelen på
+          <a id="website-link" href="https://www.mrericsson.com">www.mrericsson.com</a>.
+        </p>
+        <div class="social" id="social" aria-label="Länkar"></div>
+        <a class="btn btn-accent" href="index.html">Tillbaka till katalogen</a>
+      </footer>
+    </div>
+    <script src="app.js?v=7"></script>
+  </body>
+</html>
