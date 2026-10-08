@@ -92,11 +92,118 @@
     return li;
   }
 
+  function isAndroid() {
+    return /Android/i.test(navigator.userAgent || "");
+  }
+
+  /** Prefer native app on Android — avoid Instagram/TikTok/FB web interstitials. */
+  function androidIntent({ hostAndPath, packageName, scheme = "https", fallback }) {
+    const path = String(hostAndPath || "").replace(/^https?:\/\//i, "");
+    const fb = encodeURIComponent(fallback);
+    return `intent://${path}#Intent;scheme=${scheme};package=${packageName};S.browser_fallback_url=${fb};end`;
+  }
+
+  function socialOpenUrl(key, httpsUrl) {
+    if (!httpsUrl || !isAndroid()) return { href: httpsUrl, native: false };
+
+    try {
+      const u = new URL(httpsUrl);
+
+      if (key === "instagram") {
+        const user = (u.pathname.split("/").filter(Boolean)[0] || "").replace(/^@/, "");
+        if (!user) return { href: httpsUrl, native: false };
+        return {
+          href: androidIntent({
+            hostAndPath: `instagram.com/_u/${user}/`,
+            packageName: "com.instagram.android",
+            fallback: httpsUrl,
+          }),
+          native: true,
+        };
+      }
+
+      if (key === "tiktok") {
+        const user = (u.pathname.match(/@([^/]+)/) || [])[1] || "";
+        const path = user ? `www.tiktok.com/@${user}` : u.host + u.pathname;
+        return {
+          href: androidIntent({
+            hostAndPath: path,
+            packageName: "com.zhiliaoapp.musically",
+            fallback: httpsUrl,
+          }),
+          native: true,
+        };
+      }
+
+      if (key === "facebook") {
+        const id = u.searchParams.get("id");
+        if (id) {
+          return {
+            href: androidIntent({
+              hostAndPath: `profile/${id}`,
+              packageName: "com.facebook.katana",
+              scheme: "fb",
+              fallback: httpsUrl,
+            }),
+            native: true,
+          };
+        }
+        const page = u.pathname.replace(/^\//, "").split("/")[0];
+        if (page) {
+          return {
+            href: androidIntent({
+              hostAndPath: `page/${page}`,
+              packageName: "com.facebook.katana",
+              scheme: "fb",
+              fallback: httpsUrl,
+            }),
+            native: true,
+          };
+        }
+      }
+
+      if (key === "youtube") {
+        return {
+          href: androidIntent({
+            hostAndPath: u.host + u.pathname + u.search,
+            packageName: "com.google.android.youtube",
+            fallback: httpsUrl,
+          }),
+          native: true,
+        };
+      }
+
+      if (key === "play") {
+        const id = u.searchParams.get("id");
+        if (id) {
+          return {
+            href: `market://details?id=${encodeURIComponent(id)}`,
+            native: true,
+          };
+        }
+        // Developer page
+        const path = u.pathname + u.search;
+        return {
+          href: androidIntent({
+            hostAndPath: `play.google.com${path}`,
+            packageName: "com.android.vending",
+            fallback: httpsUrl,
+          }),
+          native: true,
+        };
+      }
+    } catch (_) {
+      /* keep https */
+    }
+
+    return { href: httpsUrl, native: false };
+  }
+
   function fillSocial(data) {
     if (!els.social) return;
     const website = data.websiteUrl || "https://www.mrericsson.com";
     const social = data.social || {};
-    const bust = "v=7";
+    const bust = "v=8";
     const items = [
       { key: "website", label: "Hemsida", url: website, icon: `assets/social/website.svg?${bust}` },
       { key: "play", label: "Google Play", url: data.playDeveloperUrl || "", icon: `assets/social/play.svg?${bust}` },
@@ -109,11 +216,15 @@
       ...items
         .filter((item) => item.url)
         .map((item) => {
+          const open = socialOpenUrl(item.key, item.url);
           const a = document.createElement("a");
           a.className = `social-btn social-btn--${item.key}`;
-          a.href = item.url;
-          a.target = "_blank";
-          a.rel = "noopener noreferrer";
+          a.href = open.href;
+          // target=_blank breaks Android intent:// → keeps you in the bad web interstitial
+          if (!open.native) {
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+          }
           a.title = item.label;
           a.setAttribute("aria-label", item.label);
           const img = document.createElement("img");
