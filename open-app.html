@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0A0D12" />
+    <title>Öppna app — Mr Ericsson</title>
+    <link rel="stylesheet" href="styles.css?v=9" />
+    <style>
+      .open-card {
+        margin: 48px 20px 24px;
+        padding: 28px 22px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: var(--bg-2);
+        text-align: center;
+      }
+      .open-card h1 {
+        font-family: Syne, Manrope, sans-serif;
+        font-size: 1.35rem;
+        margin: 0 0 10px;
+      }
+      .open-card p {
+        margin: 0 0 22px;
+        color: var(--ink-muted);
+        line-height: 1.45;
+        font-size: 0.95rem;
+      }
+      .open-card .btn {
+        display: inline-flex;
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 12px;
+        text-decoration: none;
+      }
+      .open-card .btn-ghost {
+        background: transparent;
+        color: var(--ink-muted);
+        border: 1px solid var(--line);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <main class="open-card">
+        <h1 id="title">Öppna appen</h1>
+        <p id="msg">Laddar…</p>
+        <a class="btn" id="retry" href="#">Öppna igen</a>
+        <a class="btn btn-ghost" id="back" href="index.html">Tillbaka till katalogen</a>
+      </main>
+    </div>
+    <script>
+      (function () {
+        var params = new URLSearchParams(location.search);
+        var app = (params.get("app") || "").toLowerCase();
+        var titleEl = document.getElementById("title");
+        var msgEl = document.getElementById("msg");
+        var retry = document.getElementById("retry");
+        var android = /Android/i.test(navigator.userAgent || "");
+
+        function intentUrl(path, packageName) {
+          return (
+            "intent://" +
+            path.replace(/^https?:\/\//i, "") +
+            "#Intent;scheme=https;package=" +
+            packageName +
+            ";end"
+          );
+        }
+
+        function build(social) {
+          social = social || {};
+          var map = {
+            instagram: {
+              label: "Instagram",
+              https: social.instagram || "https://www.instagram.com/mrericssonpadeltournaments/",
+              packageName: "com.instagram.android",
+              schemeFrom: function (https) {
+                try {
+                  var u = new URL(https);
+                  var user = (u.pathname.split("/").filter(Boolean)[0] || "").replace(/^@/, "");
+                  return user ? "instagram://user?username=" + encodeURIComponent(user) : null;
+                } catch (e) {
+                  return null;
+                }
+              },
+            },
+            facebook: {
+              label: "Facebook",
+              https: social.facebook || "https://www.facebook.com/profile.php?id=61594625726599",
+              packageName: "com.facebook.katana",
+              schemeFrom: function (https) {
+                try {
+                  var id = new URL(https).searchParams.get("id");
+                  return id ? "fb://page/" + id : null;
+                } catch (e) {
+                  return null;
+                }
+              },
+            },
+            tiktok: {
+              label: "TikTok",
+              https: social.tiktok || "https://www.tiktok.com/@mr_ericsson",
+              packageName: "com.zhiliaoapp.musically",
+              schemeFrom: function () {
+                return null;
+              },
+            },
+            youtube: {
+              label: "YouTube",
+              https: social.youtube || "https://www.youtube.com/@MrEricssonDeveloper",
+              packageName: "com.google.android.youtube",
+              schemeFrom: function () {
+                return null;
+              },
+            },
+          };
+          return map[app] || null;
+        }
+
+        function pathForIntent(httpsUrl) {
+          try {
+            var u = new URL(httpsUrl);
+            return u.host + u.pathname + u.search;
+          } catch (e) {
+            return httpsUrl.replace(/^https?:\/\//i, "");
+          }
+        }
+
+        function run(t) {
+          var intent = intentUrl(pathForIntent(t.https), t.packageName);
+          var scheme = t.schemeFrom(t.https);
+          titleEl.textContent = "Öppna " + t.label;
+          msgEl.textContent =
+            "Öppnar " +
+            t.label +
+            "-appen. Om inget händer: tryck på knappen (appen måste vara installerad). Vi skickar dig inte till deras webbsida.";
+          retry.textContent = "Öppna " + t.label;
+          retry.href = intent;
+
+          function tryOpen() {
+            if (!android) {
+              msgEl.textContent = "Öppna " + t.label + " manuellt på den här enheten.";
+              retry.href = t.https;
+              return;
+            }
+            location.href = intent;
+            if (scheme) {
+              setTimeout(function () {
+                if (document.visibilityState === "visible") location.href = scheme;
+              }, 450);
+            }
+          }
+
+          retry.onclick = function (e) {
+            e.preventDefault();
+            tryOpen();
+          };
+          tryOpen();
+        }
+
+        if (!app) {
+          titleEl.textContent = "Okänd länk";
+          msgEl.textContent = "Gå tillbaka till katalogen.";
+          retry.href = "index.html";
+          retry.textContent = "Till katalogen";
+          return;
+        }
+
+        fetch("games.json?_=" + Date.now(), { cache: "no-store" })
+          .then(function (r) {
+            return r.ok ? r.json() : {};
+          })
+          .then(function (data) {
+            var t = build(data.social || {});
+            if (!t) {
+              titleEl.textContent = "Okänd länk";
+              msgEl.textContent = "Gå tillbaka till katalogen.";
+              retry.href = "index.html";
+              retry.textContent = "Till katalogen";
+              return;
+            }
+            run(t);
+          })
+          .catch(function () {
+            var t = build({});
+            if (t) run(t);
+          });
+      })();
+    </script>
+  </body>
+</html>
