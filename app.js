@@ -105,7 +105,8 @@
     const appKeys = ["instagram", "facebook", "tiktok", "youtube"];
     if (appKeys.includes(key)) {
       return {
-        href: `open-app.html?app=${encodeURIComponent(key)}`,
+        // Cache-bust so WebViews don’t keep an old open-app.html
+        href: `open-app.html?app=${encodeURIComponent(key)}&v=13`,
         native: true,
       };
     }
@@ -136,7 +137,7 @@
     if (!els.social) return;
     const website = data.websiteUrl || "https://www.mrericsson.com";
     const social = data.social || {};
-    const bust = "v=12";
+    const bust = "v=13";
     const items = [
       { key: "website", label: "Hemsida", url: website, icon: `assets/social/website.svg?${bust}` },
       { key: "play", label: "Google Play", url: data.playDeveloperUrl || "", icon: `assets/social/play.svg?${bust}` },
