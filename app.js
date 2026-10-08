@@ -363,6 +363,20 @@
     }
   }
 
+  function goBack() {
+    // Host app WebView can expose this later (PC-CATALOG-01)
+    if (typeof window.AndroidCatalog?.goBack === "function") {
+      window.AndroidCatalog.goBack();
+      return;
+    }
+    if (history.length > 1) {
+      history.back();
+      return;
+    }
+    // Opened as first page — nothing to pop; stay put
+  }
+
+  document.getElementById("back-btn")?.addEventListener("click", goBack);
   els.retry?.addEventListener("click", load);
   load();
 })();

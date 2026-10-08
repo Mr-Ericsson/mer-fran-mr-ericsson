@@ -80,16 +80,20 @@ body::before {
   animation: headerIn 420ms ease-out both;
 }
 
-.back-link,
-.back-hint {
+.back-link {
   display: grid;
   place-items: center;
   width: 40px;
   height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   border-radius: var(--r-sm);
   color: var(--ink-muted);
   flex-shrink: 0;
   text-decoration: none;
+  cursor: pointer;
+  font: inherit;
 }
 
 .back-link:active,
@@ -100,8 +104,7 @@ body::before {
   opacity: 0.92;
 }
 
-.back-link svg,
-.back-hint svg {
+.back-link svg {
   width: 22px;
   height: 22px;
 }
