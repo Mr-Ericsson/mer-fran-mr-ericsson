@@ -324,22 +324,17 @@
         li.className = "tester-row";
         li.appendChild(iconNode(g));
         const meta = document.createElement("div");
+        meta.className = "tester-meta";
         const title = document.createElement("strong");
+        title.className = "tester-title";
         title.textContent = g.title || id;
         meta.appendChild(title);
-        if (g.packageName) {
-          const pkg = document.createElement("div");
-          pkg.className = "prose";
-          pkg.style.fontSize = "0.75rem";
-          pkg.style.margin = "2px 0 0";
-          pkg.textContent = g.packageName;
-          meta.appendChild(pkg);
-        }
         li.appendChild(meta);
         if (testerUrl) {
           const a = document.createElement("a");
+          a.className = "tester-cta";
           a.href = testerUrl;
-          a.textContent = "Become a tester";
+          a.textContent = "Bli testare";
           a.target = "_blank";
           a.rel = "noopener noreferrer";
           li.appendChild(a);

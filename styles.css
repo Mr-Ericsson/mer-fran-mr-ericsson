@@ -354,6 +354,7 @@ body::before {
   background: var(--bg-2);
   border: 1px solid var(--line);
   border-radius: var(--r-md);
+  min-width: 0;
 }
 
 .tester-row .tile-icon-wrap {
@@ -365,19 +366,33 @@ body::before {
   box-shadow: none;
 }
 
-.tester-row a {
+.tester-meta {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.tester-title {
+  display: block;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tester-cta {
+  flex: 0 0 auto;
   margin-left: auto;
-  flex-shrink: 0;
   color: var(--accent-ink);
   background: var(--accent);
   text-decoration: none;
   font-weight: 700;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   padding: 10px 12px;
   border-radius: 10px;
   text-align: center;
   line-height: 1.2;
-  max-width: 7.5rem;
+  white-space: nowrap;
 }
 
 .site-footer {
