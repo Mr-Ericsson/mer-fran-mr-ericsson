@@ -99,27 +99,88 @@
   /** Prefer native app on Android — avoid Instagram/TikTok/FB web interstitials. */
   function androidIntent({ hostAndPath, packageName, scheme = "https", fallback }) {
     const path = String(hostAndPath || "").replace(/^https?:\/\//i, "");
-    const fb = encodeURIComponent(fallback);
-    return `intent://${path}#Intent;scheme=${scheme};package=${packageName};S.browser_fallback_url=${fb};end`;
+    const parts = [
+      `intent://${path}#Intent`,
+      `scheme=${scheme}`,
+      `package=${packageName}`,
+    ];
+    if (fallback) {
+      parts.push(`S.browser_fallback_url=${encodeURIComponent(fallback)}`);
+    }
+    parts.push("end");
+    return parts.join(";");
   }
 
-  function socialOpenUrl(key, httpsUrl) {
-    if (!httpsUrl || !isAndroid()) return { href: httpsUrl, native: false };
+  /**
+   * Try app schemes in order; only fall back to https if the page stays visible
+   * (app did not take over). TikTok works with a single https-intent; IG/FB need
+   * custom schemes (instagram:// / fb://) or they land on the web interstitial.
+   */
+  function openAppSchemes(schemes, fallbackHttps) {
+    let index = 0;
+    const tryOne = () => {
+      if (index >= schemes.length) {
+        location.href = fallbackHttps;
+        return;
+      }
+      const url = schemes[index++];
+      let settled = false;
+      const done = () => {
+        if (settled) return;
+        settled = true;
+        document.removeEventListener("visibilitychange", onVis);
+        window.removeEventListener("pagehide", onHide);
+        clearTimeout(timer);
+      };
+      const onVis = () => {
+        if (document.visibilityState === "hidden") done();
+      };
+      const onHide = () => done();
+      document.addEventListener("visibilitychange", onVis);
+      window.addEventListener("pagehide", onHide);
+      const timer = setTimeout(() => {
+        if (document.visibilityState === "hidden") {
+          done();
+          return;
+        }
+        done();
+        tryOne();
+      }, 700);
+      location.href = url;
+    };
+    tryOne();
+  }
+
+  function socialLaunch(key, httpsUrl) {
+    if (!httpsUrl) return { href: httpsUrl, native: false, schemes: null };
+
+    if (!isAndroid()) {
+      return { href: httpsUrl, native: false, schemes: null };
+    }
 
     try {
       const u = new URL(httpsUrl);
 
       if (key === "instagram") {
         const user = (u.pathname.split("/").filter(Boolean)[0] || "").replace(/^@/, "");
-        if (!user) return { href: httpsUrl, native: false };
-        return {
-          href: androidIntent({
-            hostAndPath: `instagram.com/_u/${user}/`,
+        if (!user) return { href: httpsUrl, native: false, schemes: null };
+        const schemes = [
+          // Custom scheme first — forces the app (https-intent often stays in browser)
+          `instagram://user?username=${encodeURIComponent(user)}`,
+          androidIntent({
+            hostAndPath: `user?username=${encodeURIComponent(user)}`,
             packageName: "com.instagram.android",
-            fallback: httpsUrl,
+            scheme: "instagram",
+            fallback: null,
           }),
-          native: true,
-        };
+          androidIntent({
+            hostAndPath: `www.instagram.com/${user}/`,
+            packageName: "com.instagram.android",
+            scheme: "https",
+            fallback: null,
+          }),
+        ];
+        return { href: httpsUrl, native: true, schemes };
       }
 
       if (key === "tiktok") {
@@ -132,33 +193,65 @@
             fallback: httpsUrl,
           }),
           native: true,
+          schemes: null,
         };
       }
 
       if (key === "facebook") {
         const id = u.searchParams.get("id");
+        const schemes = [];
         if (id) {
-          return {
-            href: androidIntent({
+          // Page vs profile varies — try both, then https→FB package (TikTok-style)
+          schemes.push(`fb://page/${id}`);
+          schemes.push(`fb://profile/${id}`);
+          schemes.push(
+            androidIntent({
+              hostAndPath: `page/${id}`,
+              packageName: "com.facebook.katana",
+              scheme: "fb",
+              fallback: null,
+            })
+          );
+          schemes.push(
+            androidIntent({
               hostAndPath: `profile/${id}`,
               packageName: "com.facebook.katana",
               scheme: "fb",
-              fallback: httpsUrl,
-            }),
-            native: true,
-          };
-        }
-        const page = u.pathname.replace(/^\//, "").split("/")[0];
-        if (page) {
-          return {
-            href: androidIntent({
-              hostAndPath: `page/${page}`,
+              fallback: null,
+            })
+          );
+          schemes.push(
+            androidIntent({
+              hostAndPath: `www.facebook.com/profile.php?id=${id}`,
               packageName: "com.facebook.katana",
-              scheme: "fb",
-              fallback: httpsUrl,
-            }),
-            native: true,
-          };
+              scheme: "https",
+              fallback: null,
+            })
+          );
+          schemes.push(
+            androidIntent({
+              hostAndPath: `www.facebook.com/profile.php?id=${id}`,
+              packageName: "com.facebook.lite",
+              scheme: "https",
+              fallback: null,
+            })
+          );
+        } else {
+          const slug = u.pathname.replace(/^\//, "").split("/")[0];
+          if (slug) {
+            schemes.push(`fb://page/${slug}`);
+            schemes.push(
+              androidIntent({
+                hostAndPath: `www.facebook.com/${slug}`,
+                packageName: "com.facebook.katana",
+                scheme: "https",
+                fallback: null,
+              })
+            );
+          }
+        }
+        if (schemes.length) {
+          return { href: httpsUrl, native: true, schemes };
         }
       }
 
@@ -170,6 +263,7 @@
             fallback: httpsUrl,
           }),
           native: true,
+          schemes: null,
         };
       }
 
@@ -179,9 +273,9 @@
           return {
             href: `market://details?id=${encodeURIComponent(id)}`,
             native: true,
+            schemes: null,
           };
         }
-        // Developer page
         const path = u.pathname + u.search;
         return {
           href: androidIntent({
@@ -190,20 +284,21 @@
             fallback: httpsUrl,
           }),
           native: true,
+          schemes: null,
         };
       }
     } catch (_) {
       /* keep https */
     }
 
-    return { href: httpsUrl, native: false };
+    return { href: httpsUrl, native: false, schemes: null };
   }
 
   function fillSocial(data) {
     if (!els.social) return;
     const website = data.websiteUrl || "https://www.mrericsson.com";
     const social = data.social || {};
-    const bust = "v=8";
+    const bust = "v=9";
     const items = [
       { key: "website", label: "Hemsida", url: website, icon: `assets/social/website.svg?${bust}` },
       { key: "play", label: "Google Play", url: data.playDeveloperUrl || "", icon: `assets/social/play.svg?${bust}` },
@@ -216,7 +311,7 @@
       ...items
         .filter((item) => item.url)
         .map((item) => {
-          const open = socialOpenUrl(item.key, item.url);
+          const open = socialLaunch(item.key, item.url);
           const a = document.createElement("a");
           a.className = `social-btn social-btn--${item.key}`;
           a.href = open.href;
@@ -224,6 +319,12 @@
           if (!open.native) {
             a.target = "_blank";
             a.rel = "noopener noreferrer";
+          }
+          if (open.schemes && open.schemes.length) {
+            a.addEventListener("click", (e) => {
+              e.preventDefault();
+              openAppSchemes(open.schemes, item.url);
+            });
           }
           a.title = item.label;
           a.setAttribute("aria-label", item.label);
