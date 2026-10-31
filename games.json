@@ -115,6 +115,14 @@
       "iconUrl": "icons/mrfitness.png",
       "teaser": "Under testning",
       "websiteUrl": "https://sites.google.com/view/mrericssondev/startsida/mr-fitness"
+    },
+    {
+      "id": "narmastvinner",
+      "title": "Närmast Vinner",
+      "packageName": "com.mrericsson.narmastvinner",
+      "iconUrl": "icons/narmastvinner.png",
+      "teaser": "Under testning",
+      "websiteUrl": "https://sites.google.com/view/mrericssondev/startsida/närmast-vinner"
     }
   ],
   "upcoming": [
@@ -129,6 +137,12 @@
       "title": "Treasure Hunt",
       "teaser": "Under utveckling",
       "iconUrl": "icons/treasurehunt.png"
+    },
+    {
+      "id": "empire",
+      "title": "Empire",
+      "teaser": "Under utveckling",
+      "iconUrl": "icons/empire.png"
     }
   ],
   "testers": {
